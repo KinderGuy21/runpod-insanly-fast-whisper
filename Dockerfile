@@ -1,7 +1,6 @@
 # Base image
 FROM runpod/pytorch:1.13.0-py3.10-cuda11.7.1-devel
 
-# Arguments and environment variables
 ARG HUGGING_FACE_HUB_WRITE_TOKEN
 ENV HUGGING_FACE_HUB_WRITE_TOKEN=$HUGGING_FACE_HUB_WRITE_TOKEN
 
@@ -13,49 +12,33 @@ ENV DEFAULT_HF_MODULES_CACHE="/cache/huggingface/modules"
 ENV HUGGINFACE_HUB_CACHE="/cache/huggingface/hub"
 ENV HUGGINGFACE_ASSETS_CACHE="/cache/huggingface/assets"
 
-# Use bash shell with pipefail option for better debugging
+# Use bash shell with pipefail option
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /workspace
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    python3-dev \
-    libopenblas-dev \
-    libomp-dev \
-    ninja-build \
-    git \
-    curl \
-    ffmpeg \
-    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+# install system package ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg
 
-# Upgrade pip
-RUN pip install --upgrade pip
-
-# Clone and install FlashAttention
-RUN git clone https://github.com/HazyResearch/flash-attention.git /workspace/flash-attention && \
-    cd /workspace/flash-attention && \
-    pip install --no-build-isolation . && \
-    pip install -e .
-
-# Copy Python dependencies
+# Install Python Dependencies
 COPY builder/requirements.txt /requirements.txt
+RUN pip install --upgrade pip && \
+    pip install flash-attn=2.6.2 --no-build-isolation && \
+    pip install -e && \
+    pip install -r /requirements.txt && \
+    rm /requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r /requirements.txt
-
-# Cache models
+# Cache Models
 COPY builder/cache_model.py /cache_model.py
 RUN python /cache_model.py && \
     rm /cache_model.py
 
-# Copy the source code
+# Copy Source Code
 ADD src .
 
-# Verify the cache folder is not empty
+# Basic validation
+# Verify that the cache folder is not empty
 RUN test -n "$(ls -A /cache/huggingface)"
 
-# Default command
+
 CMD ["python", "-u", "handler.py"]
