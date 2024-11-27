@@ -1,7 +1,7 @@
-# Base image with CUDA, Python 3.10, and PyTorch pre-installed
+# Base image
 FROM runpod/pytorch:1.13.0-py3.10-cuda11.7.1-devel
 
-# Arguments and Environment Variables
+# Arguments and environment variables
 ARG HUGGING_FACE_HUB_WRITE_TOKEN
 ENV HUGGING_FACE_HUB_WRITE_TOKEN=$HUGGING_FACE_HUB_WRITE_TOKEN
 
@@ -31,17 +31,22 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip and set up Python dependencies
-COPY builder/requirements.txt /requirements.txt
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r /requirements.txt
+# Upgrade pip
+RUN pip install --upgrade pip
 
-# Install FlashAttention
+# Clone and install FlashAttention
 RUN git clone https://github.com/HazyResearch/flash-attention.git /workspace/flash-attention && \
     cd /workspace/flash-attention && \
-    pip install .
+    pip install --no-build-isolation . && \
+    pip install -e .
 
-# Cache Models for Hugging Face
+# Copy Python dependencies
+COPY builder/requirements.txt /requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r /requirements.txt
+
+# Cache models
 COPY builder/cache_model.py /cache_model.py
 RUN python /cache_model.py && \
     rm /cache_model.py
@@ -49,8 +54,8 @@ RUN python /cache_model.py && \
 # Copy the source code
 ADD src .
 
-# Verify that the cache folder is not empty
+# Verify the cache folder is not empty
 RUN test -n "$(ls -A /cache/huggingface)"
 
-# Set the default command
+# Default command
 CMD ["python", "-u", "handler.py"]
