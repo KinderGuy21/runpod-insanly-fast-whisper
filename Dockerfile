@@ -1,5 +1,5 @@
 # Base image
-FROM runpod/pytorch:1.13.0-py3.10-cuda11.7.1-devel
+FROM runpod/pytorch:2.0.0-py3.10-cuda11.7.1-devel
 
 ARG HUGGING_FACE_HUB_WRITE_TOKEN
 ENV HUGGING_FACE_HUB_WRITE_TOKEN=$HUGGING_FACE_HUB_WRITE_TOKEN
