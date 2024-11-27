@@ -4,6 +4,8 @@ FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
 ARG HUGGING_FACE_HUB_WRITE_TOKEN
 ENV HUGGING_FACE_HUB_WRITE_TOKEN=$HUGGING_FACE_HUB_WRITE_TOKEN
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV HF_HOME="/cache/huggingface"
 ENV HF_DATASETS_CACHE="/cache/huggingface/datasets"
 ENV DEFAULT_HF_METRICS_CACHE="/cache/huggingface/metrics"
