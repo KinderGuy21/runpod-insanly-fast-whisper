@@ -6,4 +6,3 @@ git+https://github.com/huggingface/transformers
 accelerate
 optimum
 ipython-autotime
-flash-attn
