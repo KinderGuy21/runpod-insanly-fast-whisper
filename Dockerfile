@@ -1,5 +1,5 @@
 # Base image
-FROM runpod/pytorch:2.0.0-py3.10-cuda11.7.1-devel
+FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
 
 ARG HUGGING_FACE_HUB_WRITE_TOKEN
 ENV HUGGING_FACE_HUB_WRITE_TOKEN=$HUGGING_FACE_HUB_WRITE_TOKEN
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y ffmpeg
 COPY builder/requirements.txt /requirements.txt
 RUN pip install --upgrade pip && \
     pip install flash-attn==2.6.2 --no-build-isolation && \
-    pip install -e && \
+    pip install -e . && \
     pip install -r /requirements.txt && \
     rm /requirements.txt
 
