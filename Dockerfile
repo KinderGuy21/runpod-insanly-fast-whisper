@@ -26,7 +26,6 @@ RUN apt-get update && apt-get install -y ffmpeg build-essential cmake git
 COPY builder/requirements.txt /requirements.txt
 RUN pip install --upgrade pip && \
     pip install flash-attn==2.6.2 && \
-    pip install -e . && \
     pip install -r /requirements.txt && \
     rm /requirements.txt
 
