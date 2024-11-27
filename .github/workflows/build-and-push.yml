@@ -37,5 +37,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.REPO }}:${{ env.TAG }} . --build-arg PROD_DB_URL=${{vars.PROD_DB_URL}} 
+          docker build \
+            --build-arg HUGGING_FACE_HUB_WRITE_TOKEN=${{ secrets.HUGGING_FACE_HUB_WRITE_TOKEN }} \
+            -t ${{ env.REGISTRY }}/${{ env.REPO }}:${{ env.TAG }} . --build-arg PROD_DB_URL=${{vars.PROD_DB_URL}} 
           docker push ${{ env.REGISTRY }}/${{ env.REPO }}:${{ env.TAG }}
