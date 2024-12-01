@@ -15,6 +15,28 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+      - name: Cleanup Docker cache and images
+        run: |
+          docker system prune --all --force --volumes
+
+      - name: Remove unnecessary tools
+        run: |
+          sudo apt-get remove --purge -y azure-cli google-cloud-sdk firefox
+          sudo apt-get autoremove -y
+
+      - name: Cleanup temporary files
+        run: sudo rm -rf /tmp/*
+
+      - name: Stop and disable unused services
+        run: |
+          sudo systemctl stop mysql
+          sudo systemctl stop postgresql
+          sudo systemctl disable mysql
+          sudo systemctl disable postgresql
+
+      - name: Check disk space
+        run: df -h
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -32,7 +54,6 @@ jobs:
           aws-region: ${{ env.REGION }}
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
         run: aws ecr get-login-password --region ${{ env.REGION }} | docker login --username AWS --password-stdin ${{ env.REGISTRY }}
 
       - name: Build and push Docker image
