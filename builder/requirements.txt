@@ -6,3 +6,4 @@ git+https://github.com/huggingface/transformers
 accelerate
 optimum
 ipython-autotime
+silero
