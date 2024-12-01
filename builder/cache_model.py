@@ -56,5 +56,5 @@ if __name__ == "__main__":
         print(f"HF_HOME is set to {os.environ.get('HF_HOME')}")
         raise ValueError("HF_HOME must be set to /cache/huggingface")
 
-    get_model("openai/whisper-large-v3",
+    get_model("openai/whisper-large-v2",
               "cuda:0" if torch.cuda.is_available() else "cpu", torch.float16)
