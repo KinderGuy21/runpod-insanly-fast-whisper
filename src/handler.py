@@ -102,7 +102,6 @@ def run_whisper_inference(audio_path, chunk_length, batch_size, language, task):
         "no_speech_threshold": 0.6,
         "logprob_threshold": -1.0,
         "repetition_penalty": 1.2,
-        "suppress_blank": True,
     }
 
     # Run the transcription
